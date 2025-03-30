@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - 'main'
+    tags-ignore:
+      - '**'
+
+jobs:
+  release:
+    name: Build, publish to NPM, tag commit with version
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{secrets.GH_PUSH_TOKEN}}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Audit
+        run: npm run audit
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Make entrypoint executable
+        run: chmod a+x built/lib/index.js
+
+      - name: Publish to NPM
+        run: echo "npm publish disabled"
+        #uses: JS-DevTools/npm-publish@v3
+        #with:
+          #token: ${{ secrets.NPM_TOKEN }}
+
+      - name: Store Version to be used in later steps
+        id: set_version
+        run: echo -n "FC_VERSION=$(node ./built/lib/index.js -V)" >> $GITHUB_OUTPUT
+
+      - name: tag release
+        run: echo "tag release disabled"
+        #run: |
+          #VERSION=${{ steps.set_version.outputs.FC_VERSION }}
+          #git tag $VERSION
+          #git push origin $VERSION
