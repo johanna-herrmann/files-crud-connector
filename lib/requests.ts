@@ -65,7 +65,7 @@ const sendDownloadRequest = async function (attributes: DownloadRequestAttribute
   const { baseUrl, path, param, token, mimetype } = attributes;
   try {
     const url = resolveUrl(baseUrl, path, param);
-    const config: axios.AxiosRequestConfig = { headers: {}, responseType: 'blob' };
+    const config: axios.AxiosRequestConfig = { headers: {}, responseType: 'arraybuffer' };
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -77,7 +77,7 @@ const sendDownloadRequest = async function (attributes: DownloadRequestAttribute
     if (status !== 200) {
       return [{ status, error: data.error as string }];
     }
-    return [null, data as Blob];
+    return [null, new Uint8Array(data as ArrayBuffer)];
   } catch (ex: unknown) {
     return [{ error: `Request failed with error: ${(ex as Error).message}` }];
   }

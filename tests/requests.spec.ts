@@ -303,74 +303,73 @@ describe('requests', (): void => {
 
   describe('download', (): void => {
     const data = new Uint8Array([65, 66, 67]); // ABC
-    const blob = new Blob([data]);
 
     test('sendDownloadRequest sends request and returns correct result, without param and token', async (): Promise<void> => {
       axiosMock = new AxiosMockAdapter(axios);
       axiosMock.onGet().reply((config) => {
         const { url, responseType } = config;
-        if (url !== 'http://local.local/api/test' || responseType !== 'blob') {
+        if (url !== 'http://local.local/api/test' || responseType !== 'arraybuffer') {
           return [404, {}];
         }
-        return [200, blob];
+        return [200, data.buffer];
       });
 
       const result = await sendDownloadRequest({ baseUrl: 'http://local.local', path: '/api/test' });
 
       expect(result.length).toBe(2);
       expect(result[0]).toBeNull();
-      expect(result[1]).toEqual(blob);
+      expect(result[1]).toEqual(data);
     });
 
     test('sendDownloadRequest sends request and returns correct result, without param', async (): Promise<void> => {
       axiosMock = new AxiosMockAdapter(axios);
       axiosMock.onGet().reply((config) => {
         const { url, headers, responseType } = config;
-        if (url !== 'http://local.local/api/test' || responseType !== 'blob' || headers?.Authorization !== 'Bearer test') {
+        if (url !== 'http://local.local/api/test' || responseType !== 'arraybuffer' || headers?.Authorization !== 'Bearer test') {
           return [404, {}];
         }
-        return [200, blob];
+        return [200, data.buffer];
       });
 
       const result = await sendDownloadRequest({ baseUrl: 'http://local.local', path: '/api/test', token: 'test' });
 
       expect(result.length).toBe(2);
       expect(result[0]).toBeNull();
-      expect(result[1]).toEqual(blob);
+      expect(result[1]).toEqual(data);
     });
 
     test('sendDownloadRequest sends request and returns correct result, without token', async (): Promise<void> => {
       axiosMock = new AxiosMockAdapter(axios);
       axiosMock.onGet().reply((config) => {
         const { url, responseType } = config;
-        if (url !== 'http://local.local/api/test/test' || responseType !== 'blob') {
+        if (url !== 'http://local.local/api/test/test' || responseType !== 'arraybuffer') {
           return [404, {}];
         }
-        return [200, blob];
+        return [200, data.buffer];
       });
 
       const result = await sendDownloadRequest({ baseUrl: 'http://local.local', path: '/api/test', param: 'test' });
 
       expect(result.length).toBe(2);
       expect(result[0]).toBeNull();
-      expect(result[1]).toEqual(blob);
+      expect(result[1]).toEqual(data);
     });
 
     test('sendDownloadRequest sends request and returns correct result, with all', async (): Promise<void> => {
       axiosMock = new AxiosMockAdapter(axios);
       axiosMock.onGet().reply((config) => {
         const { url, headers, responseType } = config;
-        if (url !== 'http://local.local/api/test/test' || responseType !== 'blob' || headers?.Authorization !== 'Bearer test') {
+        if (url !== 'http://local.local/api/test/test' || responseType !== 'arraybuffer' || headers?.Authorization !== 'Bearer test') {
           return [404, {}];
         }
-        return [200, blob];
+        return [200, data.buffer];
       });
 
       const result = await sendDownloadRequest({ baseUrl: 'http://local.local', path: '/api/test', token: 'test', param: 'test' });
 
       expect(result.length).toBe(2);
       expect(result[0]).toBeNull();
-      expect(result[1]).toEqual(blob);
+      expect(result[1]).toEqual(data);
     });
 
     test('sendDownloadRequest sends request and returns correct result, with all, including custom mimetype', async (): Promise<void> => {
@@ -379,13 +378,13 @@ describe('requests', (): void => {
         const { url, headers, responseType } = config;
         if (
           url !== 'http://local.local/api/test/test' ||
-          responseType !== 'blob' ||
+          responseType !== 'arraybuffer' ||
           headers?.Authorization !== 'Bearer test' ||
           headers['X-Mimetype'] !== 'image/png'
         ) {
           return [404, {}];
         }
-        return [200, blob];
+        return [200, data.buffer];
       });
 
       const result = await sendDownloadRequest({
@@ -398,14 +397,14 @@ describe('requests', (): void => {
 
       expect(result.length).toBe(2);
       expect(result[0]).toBeNull();
-      expect(result[1]).toEqual(blob);
+      expect(result[1]).toEqual(data);
     });
 
     test('sendDownloadRequest sends request and returns correct response error', async (): Promise<void> => {
       axiosMock = new AxiosMockAdapter(axios);
       axiosMock.onGet().reply((config) => {
         const { url, responseType } = config;
-        if (url !== 'http://local.local/api/test' || responseType !== 'blob') {
+        if (url !== 'http://local.local/api/test' || responseType !== 'arraybuffer') {
           return [404, {}];
         }
         return [201, {}];
