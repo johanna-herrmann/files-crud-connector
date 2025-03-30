@@ -39,18 +39,16 @@ jobs:
         run: chmod a+x built/lib/index.js
 
       - name: Publish to NPM
-        run: echo "npm publish disabled"
-        #uses: JS-DevTools/npm-publish@v3
-        #with:
-          #token: ${{ secrets.NPM_TOKEN }}
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Store Version to be used in later steps
-        id: set_version
-        run: echo -n "FC_VERSION=$(node ./built/lib/index.js -V)" >> $GITHUB_OUTPUT
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
 
       - name: tag release
-        run: echo "tag release disabled"
-        #run: |
-          #VERSION=${{ steps.set_version.outputs.FC_VERSION }}
-          #git tag $VERSION
-          #git push origin $VERSION
+        run: |
+          VERSION=${{steps.package-version.outputs.current-version}}
+          git tag $VERSION
+          git push origin $VERSION
